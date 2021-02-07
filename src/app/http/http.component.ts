@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {exhaustMap, map, take} from 'rxjs/operators';
+import {HttpClient} from '@angular/common/http';
+import {map} from 'rxjs/operators';
 import {AuthService} from '../auth.service';
 import {ExcelServicesService} from '../services/excel-services.service';
 
@@ -31,12 +31,8 @@ export class HttpComponent implements OnInit {
   }
 
   onFetchPosts() {
-    return this.authService.user.pipe(take(1), exhaustMap(user => {
-      return this.http.get('https://learing-angular-default-rtdb.firebaseio.com/posts.json',
-        {
-          params: new HttpParams().set('auth', user.token)
-        });
-    }), map(responseData => {
+      return this.http.get('https://learing-angular-default-rtdb.firebaseio.com/posts.json')
+        .pipe(map(responseData => {
       const postArray = [];
       for (const key in responseData) {
         if (responseData.hasOwnProperty(key)) {
@@ -52,11 +48,7 @@ export class HttpComponent implements OnInit {
   }
 
   onCreatePost(postData: { tittle: string, content: string }) {
-    return this.authService.user.pipe(take(1), exhaustMap(user => {
-      return this.http.post('https://learing-angular-default-rtdb.firebaseio.com/posts.json', postData,
-        {
-          params: new HttpParams().set('auth', user.token)
-        });
-    })).subscribe((response) => console.log(response));
+      return this.http.post('https://learing-angular-default-rtdb.firebaseio.com/posts.json', postData)
+        .subscribe((response) => console.log(response));
   }
 }
